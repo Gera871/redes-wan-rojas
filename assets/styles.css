@@ -1,0 +1,717 @@
+/* =========================================================
+   ENTERPRISE WAN ARCHITECT — Sistema de Diseño Profesional
+   Inspirado en Linear, Vercel y Datadog Dashboards
+   ========================================================= */
+
+:root {
+  /* Paleta */
+  --bg: #0d1420;
+  --bg-alt: #0a0f18;
+  --surface: #151e2c;
+  --surface-2: #111927;
+  --surface-3: #1b2637;
+  --line: #28344a;
+  --line-soft: rgba(255, 255, 255, 0.06);
+
+  --ink: #e7edf6;
+  --ink-2: #a7b4c8;
+  --ink-3: #6d7c95;
+
+  --accent: #3cc7b7;
+  --accent-2: #2ba79a;
+  --accent-ink: #0d1420;
+  --accent-soft: rgba(60, 199, 183, 0.12);
+  --accent-glow: rgba(60, 199, 183, 0.35);
+
+  --up: #54c98a;
+  --up-soft: rgba(84, 201, 138, 0.14);
+  --warn: #e0a44f;
+  --warn-soft: rgba(224, 164, 79, 0.14);
+  --down: #ef7676;
+  --down-soft: rgba(239, 118, 118, 0.14);
+
+  /* Tipografía */
+  --font-display: 'Bricolage Grotesque', 'Hanken Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Geometría */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow: 0 4px 20px rgba(0,0,0,0.35);
+  --shadow-lg: 0 20px 50px -12px rgba(0,0,0,0.6);
+}
+
+/* ----------- FONDO GENERAL ----------- */
+.stApp {
+  background: var(--bg) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  background-image:
+    radial-gradient(1200px 600px at 15% -10%, rgba(60, 199, 183, 0.06), transparent 60%),
+    radial-gradient(1000px 500px at 110% 110%, rgba(60, 120, 199, 0.05), transparent 60%);
+}
+
+.main .block-container {
+  padding-top: 2.2rem !important;
+  padding-bottom: 3rem !important;
+  max-width: 1400px !important;
+}
+
+/* ----------- TIPOGRAFÍA ----------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display) !important;
+  color: var(--ink) !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 700 !important;
+}
+h1 { font-size: 2rem !important; }
+h2 { font-size: 1.5rem !important; }
+h3 { font-size: 1.2rem !important; }
+p, label, span, div {
+  font-family: var(--font-body);
+}
+code, pre, .stCode {
+  font-family: var(--font-mono) !important;
+}
+
+/* ----------- SIDEBAR ----------- */
+section[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #0b1119 0%, #0a0f18 100%) !important;
+  border-right: 1px solid var(--line) !important;
+  padding-top: 1rem !important;
+}
+section[data-testid="stSidebar"] > div {
+  padding-top: 1rem;
+}
+section[data-testid="stSidebar"] h3 {
+  font-family: var(--font-display) !important;
+  font-size: 15px !important;
+  letter-spacing: 0.02em;
+  color: var(--ink) !important;
+  margin-bottom: 12px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+}
+section[data-testid="stSidebar"] .stSelectbox label {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--ink-3) !important;
+}
+section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+  color: var(--ink) !important;
+  font-weight: 500;
+}
+section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div:hover {
+  border-color: var(--accent) !important;
+}
+
+/* ----------- BOTONES ----------- */
+.stButton > button,
+.stDownloadButton > button {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%) !important;
+  color: var(--accent-ink) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.01em;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.6rem 1.3rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 12px var(--accent-glow) !important;
+  width: auto !important;
+}
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--accent-glow) !important;
+  filter: brightness(1.08);
+}
+.stButton > button:active {
+  transform: translateY(0);
+}
+
+/* ----------- INPUTS ----------- */
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
+  background-color: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 13.5px !important;
+  padding: 0.55rem 0.8rem !important;
+  transition: all 0.15s ease !important;
+}
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stTextArea textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+  outline: none !important;
+}
+.stTextInput label,
+.stNumberInput label,
+.stTextArea label,
+.stSelectbox label,
+.stMultiSelect label,
+.stSlider label {
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ink-2) !important;
+  margin-bottom: 6px !important;
+}
+
+/* ----------- SELECTBOX / MULTISELECT ----------- */
+div[data-baseweb="select"] > div {
+  background-color: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--ink) !important;
+  min-height: 42px !important;
+}
+div[data-baseweb="select"] > div:hover {
+  border-color: var(--accent) !important;
+}
+div[data-baseweb="popover"] {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+}
+div[data-baseweb="popover"] li {
+  background-color: var(--surface) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+}
+div[data-baseweb="popover"] li:hover {
+  background-color: var(--surface-3) !important;
+}
+/* Chips de multiselect */
+span[data-baseweb="tag"] {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  border: 1px solid rgba(60, 199, 183, 0.35) !important;
+  border-radius: 6px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+span[data-baseweb="tag"] svg {
+  fill: var(--accent) !important;
+}
+
+/* ----------- DATAFRAME ----------- */
+.stDataFrame {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow) !important;
+}
+.stDataFrame thead tr th {
+  background: var(--surface-2) !important;
+  color: var(--ink-2) !important;
+  font-family: var(--font-display) !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--line) !important;
+}
+.stDataFrame tbody tr td {
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12.5px !important;
+  border-bottom: 1px solid var(--line-soft) !important;
+}
+.stDataFrame tbody tr:hover td {
+  background: var(--surface-2) !important;
+}
+
+/* ----------- ALERTAS (info/success/warning/error) ----------- */
+div[data-testid="stAlert"] {
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--line) !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+}
+div[data-testid="stAlert"][data-baseweb="notification"] {
+  padding: 14px 18px !important;
+}
+
+/* ----------- MÉTRICAS ----------- */
+div[data-testid="stMetric"] {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  padding: 18px !important;
+  box-shadow: var(--shadow) !important;
+}
+div[data-testid="stMetric"] label {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3) !important;
+}
+div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+  font-family: var(--font-display) !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: var(--accent) !important;
+}
+
+/* ----------- SPINNER ----------- */
+.stSpinner > div {
+  border-top-color: var(--accent) !important;
+}
+
+/* ----------- SCROLLBAR ----------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-alt); }
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+  border: 2px solid var(--bg-alt);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* =========================================================
+   COMPONENTES PERSONALIZADOS (usados vía assets/ui.py)
+   ========================================================= */
+
+/* Hero Header */
+.wan-hero {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 26px 30px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.wan-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px 200px at 0% 0%, var(--accent-soft), transparent 70%);
+  pointer-events: none;
+}
+.wan-hero-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+.wan-hero-sub {
+  color: var(--ink-2);
+  font-size: 14.5px;
+  margin: 0;
+  position: relative;
+  max-width: 70ch;
+  line-height: 1.55;
+}
+.wan-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(60, 199, 183, 0.3);
+  margin-bottom: 10px;
+  position: relative;
+  letter-spacing: 0.04em;
+}
+
+/* Section title */
+.wan-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 20px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.wan-section-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(60, 199, 183, 0.25);
+  flex-shrink: 0;
+}
+.wan-section-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.wan-section-sub {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin: 2px 0 0 0;
+}
+
+/* Card */
+.wan-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.wan-card:hover { border-color: rgba(60, 199, 183, 0.35); }
+
+/* Metric */
+.wan-metric {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.wan-metric-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+.wan-metric-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.wan-metric-delta {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--up);
+  font-weight: 600;
+}
+
+/* Badge */
+.wan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.wan-badge-success { background: var(--up-soft); color: var(--up); border: 1px solid rgba(84,201,138,0.3); }
+.wan-badge-warning { background: var(--warn-soft); color: var(--warn); border: 1px solid rgba(224,164,79,0.3); }
+.wan-badge-error { background: var(--down-soft); color: var(--down); border: 1px solid rgba(239,118,118,0.3); }
+.wan-badge-info { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(60,199,183,0.3); }
+
+/* Terminal MacBook */
+.mac-window {
+  background: #0a0e14;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  margin: 20px 0;
+}
+.mac-header {
+  background: #161d29;
+  padding: 11px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.mac-dot-red, .mac-dot-yellow, .mac-dot-green {
+  width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+}
+.mac-dot-red { background: #ff5f56; }
+.mac-dot-yellow { background: #ffbd2e; }
+.mac-dot-green { background: #27c93f; }
+.mac-title {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  margin-left: 10px;
+  font-weight: 500;
+}
+.mac-body {
+  padding: 18px 20px;
+  color: #3cc7b7;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  background: #0a0e14;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Progress bar personalizada */
+.wan-progress {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+  margin: 10px 0 6px 0;
+}
+.wan-progress-fill {
+  background: linear-gradient(90deg, var(--accent), var(--up));
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.wan-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+/* Grid de dispositivos */
+.wan-device {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s ease;
+}
+.wan-device:hover { border-color: rgba(60,199,183,0.4); }
+.wan-device-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 14.5px;
+  margin: 0 0 3px 0;
+}
+.wan-device-meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+/* =========================================================
+   SIDEBAR — MENÚ DE NAVEGACIÓN ESTÁTICO (radio estilizado)
+   ========================================================= */
+
+section[data-testid="stSidebar"] div[role="radiogroup"] {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px !important;
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--ink-2) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  position: relative;
+  line-height: 1.35;
+  width: 100%;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+  background: rgba(60, 199, 183, 0.06) !important;
+  color: var(--ink) !important;
+  border-color: rgba(60, 199, 183, 0.18) !important;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child {
+  display: none !important;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
+  background: linear-gradient(90deg, rgba(60, 199, 183, 0.14), rgba(60, 199, 183, 0.04)) !important;
+  color: var(--ink) !important;
+  border-color: rgba(60, 199, 183, 0.4) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 10px rgba(60, 199, 183, 0.12);
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked)::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label p {
+  margin: 0 !important;
+  font-size: 13.5px !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  line-height: 1.35 !important;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] > label[data-baseweb="radio"] {
+  background: transparent !important;
+}
+
+
+/* =========================================================
+   SLIDERS — Pulgar estilizado SIN romper el cálculo de Streamlit
+   ========================================================= */
+
+/* Contenedor general: damos espacio arriba para el tooltip del número */
+.stSlider {
+  padding-top: 30px !important;
+  padding-bottom: 6px !important;
+}
+
+/* Riel base (línea gris) */
+.stSlider [data-baseweb="slider"] > div > div {
+  background: var(--line) !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+}
+
+/* Progreso activo (línea turquesa a la izquierda del pulgar) */
+.stSlider [data-baseweb="slider"] > div > div > div {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)) !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 12px rgba(60, 199, 183, 0.35);
+}
+
+/* Pulgar: solo estilo visual. NO tocamos top, left, transform ni position. */
+.stSlider [data-baseweb="slider"] div[role="slider"] {
+  background: var(--accent) !important;
+  border: 3px solid var(--bg) !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  box-shadow:
+    0 0 0 4px rgba(60, 199, 183, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.45) !important;
+  transition: box-shadow 0.15s ease !important;
+  /* Sin transform: dejamos que Streamlit lo posicione. */
+}
+
+.stSlider [data-baseweb="slider"] div[role="slider"]:hover {
+  box-shadow:
+    0 0 0 7px rgba(60, 199, 183, 0.28),
+    0 4px 14px rgba(60, 199, 183, 0.45) !important;
+}
+
+.stSlider [data-baseweb="slider"] div[role="slider"]:focus {
+  outline: none !important;
+  box-shadow:
+    0 0 0 7px rgba(60, 199, 183, 0.3),
+    0 0 0 2px var(--accent) !important;
+}
+
+/* El div interior que Streamlit usa para mostrar el número (tooltip) */
+.stSlider [data-baseweb="slider"] div[role="slider"] > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(60, 199, 183, 0.45) !important;
+  min-width: 28px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  /* Flota arriba sin romper el posicionamiento del pulgar */
+  position: absolute !important;
+  bottom: 100% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin-bottom: 8px !important;
+}
+
+/* Ocultar cualquier div extra que Streamlit meta dentro del pulgar */
+.stSlider [data-baseweb="slider"] div[role="slider"] > div:nth-child(n+2) {
+  display: none !important;
+}
+
+/* Etiquetas min / max */
+.stSlider [data-testid="stTickBar"] {
+  background: transparent !important;
+}
+.stSlider [data-testid="stTickBar"] > div,
+.stSlider [data-testid="stTickBarMin"],
+.stSlider [data-testid="stTickBarMax"] {
+  color: var(--ink-3) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  margin-top: 6px !important;
+}
+
+/* Label del slider */
+.stSlider label {
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ink-2) !important;
+  margin-bottom: 6px !important;
+}
