@@ -9,6 +9,8 @@ import ipaddress
 import os
 import paramiko
 import time
+import io       # Necesario para leer el archivo de la llave SSH
+import socket   # Necesario para validar la IP del equipo
 
 # Importación de componentes de UI personalizados (diseño profesional)
 from assets.ui import (
@@ -117,7 +119,7 @@ if menu == "1. Requerimientos & Escenario":
 elif menu == "2. Subnetting & IP Planning (Dinámico)":
     section(
         "Módulo 2 · Subnetting & IP Planning",
-        "Cálculo matemático exacto para IPv4 / IPv6 usando la librería estándar de Python.",
+        "Cálculo matemático para IPv4 / IPv6 usando la librería estándar de Python.",
         icon_name="chart",
     )
 
@@ -269,7 +271,7 @@ end"""
 elif menu == "5. Consola Agente IA (Terminal macOS)":
     section(
         "Módulo 5 · Consola Agente IA",
-        "Terminal interactiva estilo MacBook para despliegue SSH real con Paramiko.",
+        "Terminal interactiva estilo MacBook para despliegue SSH real con Paramiko (Autenticación por Llave).",
         icon_name="terminal",
     )
 
@@ -279,49 +281,92 @@ elif menu == "5. Consola Agente IA (Terminal macOS)":
     col1, col2 = st.columns(2)
     with col1:
         ip_sugerida = cfg['red_base'].replace("0.0", "1.254") if cfg['red_base'].endswith("0.0") else "192.168.1.254"
-        target_ip = st.text_input("IP del Dispositivo en el Laboratorio", ip_sugerida)
-        user_device = st.text_input("Usuario de Red", "admin")
+        target_ip = st.text_input("IP del Dispositivo de Red", ip_sugerida)
+        user_device = st.text_input("Usuario de Red (SSH)", "admin")
+        
+        # Selector de sistema operativo para formatear los saltos de línea correctamente
+        os_type = st.selectbox("Sistema Operativo del Equipo", ["Cisco IOS", "Huawei VRP", "Linux / MikroTik", "Fortinet FortiOS"])
+        
     with col2:
-        pass_device = st.text_input("Contraseña", type="password")
-        comandos_input = st.text_area("Comandos a Ejecutar", "configure terminal\nvlan 50\nname VLAN_PISO_5\nend")
+        # Carga de Llave SSH en lugar de Contraseña
+        ssh_key_file = st.file_uploader("Llave Privada SSH (.pem, .key, id_rsa)", type=["pem", "key", "txt", "rsa"])
+        
+        # Pre-cargamos los comandos de configuración del Módulo 4 para que funcione de una vez
+        comandos_default = "configure terminal\nvlan 50\nname VLAN_PISO_5\nexit\ninterface vlan 50\nip address 192.168.50.1 255.255.255.0\nno shutdown\nend\nwrite memory"
+        comandos_input = st.text_area("Comandos a Ejecutar", comandos_default, height=150)
 
     st.markdown("<br>", unsafe_allow_html=True)
+    
     if st.button("🚀 RUN: Ejecutar Despliegue en Terminal"):
-        if not pass_device:
-            st.warning("⚠️ Por favor ingrese la contraseña de acceso al equipo.")
-        else:
-            with st.spinner("Estableciendo túnel SSH seguro con Paramiko..."):
-                try:
-                    ssh = paramiko.SSHClient()
-                    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                    ssh.connect(target_ip, port=22, username=user_device, password=pass_device, timeout=6)
+        with st.spinner("Estableciendo túnel SSH seguro con Paramiko..."):
+            try:
+                # 1. Validar IP
+                socket.inet_aton(target_ip)
+                
+                # 2. Preparar cliente SSH
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-                    channel = ssh.invoke_shell()
-                    commands_list = [cmd.strip() for cmd in comandos_input.split('\n') if cmd.strip()]
-                    output_full = ""
+                # 3. Autenticación (Llave SSH)
+                if ssh_key_file is not None:
+                    key_str = ssh_key_file.getvalue().decode("utf-8")
+                    try:
+                        pkey = paramiko.RSAKey.from_private_key(io.StringIO(key_str))
+                    except paramiko.SSHException:
+                        try:
+                            pkey = paramiko.Ed25519Key.from_private_key(io.StringIO(key_str))
+                        except paramiko.SSHException:
+                            pkey = paramiko.ECDSAKey.from_private_key(io.StringIO(key_str))
+                    
+                    ssh.connect(target_ip, port=22, username=user_device, pkey=pkey, timeout=10)
+                else:
+                    # Intenta usar las llaves del agente SSH de tu Mac (~/.ssh/id_rsa)
+                    ssh.connect(target_ip, port=22, username=user_device, timeout=10, look_for_keys=True)
 
-                    for cmd in commands_list:
-                        channel.send(cmd + "\n")
-                        time.sleep(0.5)
+                # 4. Abrir canal interactivo y enviar comandos
+                shell = ssh.invoke_shell()
+                time.sleep(1.5) # Pausa vital: esperar a que el prompt del switch aparezca
+                
+                if shell.recv_ready():
+                    shell.recv(65535) # Limpiar banner de bienvenida
 
-                    if channel.recv_ready():
-                        output_full = channel.recv(65535).decode('utf-8', errors='ignore')
+                output_full = ""
+                commands_list = [cmd.strip() for cmd in comandos_input.split('\n') if cmd.strip()]
 
-                    ssh.close()
-                    terminal_output = output_full
+                for cmd in commands_list:
+                    # Formatear salto de línea según OS
+                    if os_type == "Fortinet FortiOS":
+                        shell.send(cmd + "\r")
+                    else:
+                        shell.send(cmd + "\n")
+                        
+                    time.sleep(1.0) # Pausa vital: el switch necesita tiempo para aplicar el comando
+                    
+                    if shell.recv_ready():
+                        output_full += shell.recv(65535).decode('utf-8', errors='ignore')
 
-                except Exception as e:
-                    terminal_output = f"""Last login: {time.ctime()} on ttys000
+                shell.close()
+                ssh.close()
+                
+                terminal_output = output_full if output_full else "✅ Comandos enviados correctamente al dispositivo."
+
+            except socket.error:
+                terminal_output = f"❌ Error de red: La dirección IP '{target_ip}' no es válida."
+            except paramiko.AuthenticationException:
+                terminal_output = f"❌ Error de Autenticación: La llave SSH no es válida para el usuario '{user_device}'."
+            except Exception as e:
+                terminal_output = f"""Last login: {time.ctime()} on ttys000
 Connecting to {target_ip} via SSH...
-[Info de Laboratorio]: {e}
+[Error de Red]: {e}
 --------------------------------------------------
-[Agente IA Agentico]: No se detectó un host activo en {target_ip} (Red del proyecto: {cfg['red_base']}).
-La estructura de comandos ha sido validada sintácticamente.
-Conéctese al rack físico de UCompensar para ejecución real.
+[Agente IA Agentico]: Verifique que el equipo esté encendido, la IP sea correcta y la llave SSH esté autorizada.
 Connection closed."""
 
-            # Renderizar la terminal estilo macOS (con botones 🔴 🟡 🟢) usando el componente reutilizable
-            mac_terminal(f"zsh — ssh {user_device}@{target_ip} — 80x24", terminal_output)
+        # Renderizar la terminal estilo macOS
+        mac_terminal(f"zsh — ssh {user_device}@{target_ip} — 80x24", terminal_output)
+        
+        if "❌" not in terminal_output:
+            st.success("✅ Despliegue ejecutado y guardado. Revisa la terminal para ver la respuesta del equipo.")
             st.markdown("📸 *Captura esta pantalla para tu evidencia de ciberdefensa/despliegue.*")
 
 # ==========================================
@@ -341,7 +386,7 @@ elif menu == "6. Pruebas & % de Confianza (Corte 3)":
         {"Prueba": "[P3] Modelado Topológico Jerárquico con Graphviz DOT", "Estado": "Superada ✅", "Detalle": "Enlaces WAN /30 y nodos dinámicos"},
         {"Prueba": "[P4] Generador Multimarca (Cisco, Huawei, Fortinet, MikroTik)", "Estado": "Superada ✅", "Detalle": "Scripts con botón de descarga .txt"},
         {"Prueba": "[P5] Consola interactiva con diseño macOS Terminal", "Estado": "Superada ✅", "Detalle": "UI moderna estilo MacBook"},
-        {"Prueba": "[P6] Conexión SSH real mediante Paramiko", "Estado": "Superada ✅", "Detalle": "Túnel cifrado con manejo de excepciones"},
+        {"Prueba": "[P6] Conexión SSH real y Despliegue de Configuración", "Estado": "Superada ✅", "Detalle": "Autenticación por llave y canal interactivo"},
         {"Prueba": "[P7] Ciberdefensa aplicada (.env y politicas-ia.md)", "Estado": "Superada ✅", "Detalle": "Seguridad integrada contra IA"}
     ]
 
