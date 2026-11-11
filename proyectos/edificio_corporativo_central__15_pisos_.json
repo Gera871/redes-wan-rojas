@@ -1,0 +1,13 @@
+{
+    "nombre": "Edificio Corporativo Central (15 Pisos)",
+    "pisos": 15,
+    "clientes": 250,
+    "ancho_banda": "1 Gbps Simétrico",
+    "servicios": [
+        "VoIP",
+        "Servidores / DMZ"
+    ],
+    "vpn": "IPsec VPN Site-to-Site",
+    "red_base": "192.168.0.0",
+    "prefijo": 22
+}
