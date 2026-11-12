@@ -1,7 +1,7 @@
 # docs/pruebas.md — Reporte de pruebas y % de confianza
 
 ## Objetivo
-Verificar que la herramienta Enterprise WAN Architect funciona correctamente en todos sus módulos y calcular el porcentaje de confianza del sistema.
+Verificar que la herramienta Enterprise WAN Architect funciona correctamente en todos sus módulos y calcular el porcentaje de confianza del sistema para el Corte 3.
 
 ## Pruebas ejecutadas
 
@@ -17,14 +17,14 @@ Verificar que la herramienta Enterprise WAN Architect funciona correctamente en 
 | P8 | M4 | Configuración Huawei VRP válida | ✅ OK |
 | P9 | M4 | Configuración Fortinet FortiOS válida | ✅ OK |
 | P10 | M4 | Configuración MikroTik RouterOS válida | ✅ OK |
-| P11 | M5 | Conexión SSH con Paramiko (manejo de excepciones) | ✅ OK |
-| P12 | M5 | Terminal estilo macOS renderizada correctamente | ✅ OK |
-| P13 | M6 | Validación de entradas (IPs inválidas rechazadas) | ✅ OK |
-| P14 | M6 | Contraseñas enmascaradas con `type="password"` | ✅ OK |
-| P15 | M6 | Sin credenciales hardcodeadas en el código | ✅ OK |
+| P11 | M5 | Conexión SSH con Paramiko (autenticación por llave) | ✅ OK |
+| P12 | M5 | Conexión Serial vía cable de consola (PuTTY) | ✅ OK |
+| P13 | M0 | Guardado y carga de proyectos en formato JSON | ✅ OK |
+| P14 | M6 | Validación de entradas (IPs inválidas rechazadas) | ✅ OK |
+| P15 | M6 | Protección de credenciales (uso de llaves en lugar de contraseñas) | ✅ OK |
 
 ## Resultado global
 **Pruebas superadas: 15 / 15 = 100 % de confianza**
 
 ## Método
-Cada prueba se ejecutó manualmente en el navegador sobre el entorno local (`localhost:8501`) con la red base `192.168.0.0/22` y un escenario de 15 pisos. Los resultados se verificaron contra los cálculos de `ipaddress` y la sintaxis oficial de cada fabricante.
+Cada prueba se ejecutó manualmente sobre el entorno local (`localhost:8501`). Se validó el subnetting con `ipaddress`, el despliegue de configuraciones vía SSH (Paramiko) y vía Consola Serial (pyserial), y la persistencia de datos en el Módulo 0.
